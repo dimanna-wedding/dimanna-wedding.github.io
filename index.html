@@ -454,34 +454,35 @@
        // Отправка формы RSVP
 const scriptURL = 'https://script.google.com/macros/s/AKfycbwy1xLWS-Q0KRB9Nwty9tsOh0wssQRR0aC455rDBCtxOI1-o4NrM31UKH_djJurYM-A/exec';
 
-// Самый простой прямой перехват кнопки
-document.addEventListener('click', function(e) {
-  // Ищем кнопку отправки по её классу или тексту
-  if (e.target && (e.target.classList.contains('submit-btn') || e.target.innerText === 'Отправить')) {
-    e.preventDefault();
-    
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwy1xLWS-Q0KRB9Nwty9tsOh0wssQRR0aC455rDBCtxOI1-o4NrM31UKH_djJurYM-A/exec';
-    
-    // Берем значения из полей по их тегам или классам (или подставляем текст по умолчанию)
-    const nameField = document.querySelector('input[name="name"]') || document.querySelector('#name') || {value: "Гость"};
-    const attField = document.querySelector('select[name="attendance"]') || document.querySelector('#attendance') || {value: "Присутствие"};
-    
-    const dataString = "name=" + encodeURIComponent(nameField.value) + "&attendance=" + encodeURIComponent(attField.value);
-    
-    e.target.innerText = 'Отправляем...';
-    
-    fetch(scriptURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: dataString
-    })
-    .then(() => {
-      alert('Спасибо! Ваш ответ сохранен.');
-      location.reload(); // Перезагрузит страницу после успешной отправки
-    })
-    .catch(() => {
-      alert('Спасибо! Ответ отправлен.');
-      location.reload();
-    });
-  }
+document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const btn = document.querySelector('.submit-btn');
+  btn.innerText = 'Отправляем...';
+  btn.disabled = true;
+
+  const nameInput = this.querySelector('[name="name"]') ? this.querySelector('[name="name"]').value : "Гость";
+  const attendanceSelect = this.querySelector('[name="attendance"]') ? this.querySelector('[name="attendance"]').value : "Не указано";
+
+  const dataString = "name=" + encodeURIComponent(nameInput) + "&attendance=" + encodeURIComponent(attendanceSelect);
+
+  fetch(scriptURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: dataString
+  })
+  .then(response => {
+    alert('Спасибо! Ваш ответ сохранен.');
+    this.reset();
+    btn.innerText = 'Отправить';
+    btn.disabled = false;
+  })
+  .catch(error => {
+    console.error('Ошибка!', error);
+    alert('Упс, произошла ошибка при отправке. Пожалуйста, попробуйте еще раз.');
+    btn.innerText = 'Отправить';
+    btn.disabled = false;
+  });
 });
