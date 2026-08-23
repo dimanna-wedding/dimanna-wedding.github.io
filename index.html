@@ -144,7 +144,7 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // ПРЯМАЯ ОТПРАВКА В TELEGRAM
+        // ПРЯМАЯ ОТПРАВКА В TELEGRAM С ТАБЛИЧНЫМ ФОРМАТИРОВАНИЕМ
         const BOT_TOKEN = '8727506712:AAFh1czP_R7WrmAEbObEbkvMkemjd6dRDgE';
         const CHAT_ID = '124877125';
 
@@ -157,8 +157,17 @@
 
             const nameVal = document.getElementById('guestName').value;
             const attVal = document.querySelector('input[name="attendance"]:checked').value;
+            const timeVal = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
 
-            const textMsg = `💌 Новый ответ на приглашение!\n\n👤 Имя: ${nameVal}\n✨ Присутствие: ${attVal}`;
+            // Формируем красивую табличную карточку
+            const textMsg = 
+`📋 *НОВЫЙ ОТВЕТ НА ПРИГЛАШЕНИЕ*
+----------------------------------
+👤 *Имя гостя:* \`${nameVal}\`
+✨ *Присутствие:* \`${attVal}\`
+🕒 *Время:* \`${timeVal}\`
+----------------------------------`;
+
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
             fetch(url, {
@@ -166,7 +175,8 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     chat_id: CHAT_ID,
-                    text: textMsg
+                    text: textMsg,
+                    parse_mode: 'Markdown'
                 })
             })
             .then(response => response.json())
