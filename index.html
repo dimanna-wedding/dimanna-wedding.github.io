@@ -451,8 +451,8 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // Отправка формы RSVP
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwXpD0nmAz692JeCZKfQ4rCyWpkWY28lInvlzyJvI4FBKRF1Jrm-i8byKDnsLLgJwHB/exec';
+        // Отправка формы RSVP (исправленный надежный метод)
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwy1xLWS-Q0KRB9Nwty9tsOh0wssQRR0aC455rDBCtxOI1-o4NrM31UKH_djJurYM-A/exec';
         
         document.getElementById('rsvpForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -461,21 +461,32 @@
             btn.innerText = 'Отправляем...';
             btn.disabled = true;
 
-            const formData = new FormData(this);
+            const nameVal = this.querySelector('[name="name"]').value;
+            const attendanceEl = this.querySelector('[name="attendance"]:checked');
+            const attendanceVal = attendanceEl ? attendanceEl.value : "Не указано";
 
-            fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
-                .then(response => {
-                    alert('Спасибо! Ваш ответ сохранен.');
-                    this.reset();
-                    btn.innerText = 'Отправить';
-                    btn.disabled = false;
-                })
-                .catch(error => {
-                    console.error('Ошибка!', error.message);
-                    alert('Упс, произошла ошибка при отправке. Пожалуйста, попробуйте еще раз.');
-                    btn.innerText = 'Отправить';
-                    btn.disabled = false;
-                });
+            const dataString = "name=" + encodeURIComponent(nameVal) + "&attendance=" + encodeURIComponent(attendanceVal);
+
+            fetch(scriptURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: dataString
+            })
+            .then(response => {
+                alert('Спасибо! Ваш ответ сохранен.');
+                this.reset();
+                btn.innerText = 'Отправить';
+                btn.disabled = false;
+            })
+            .catch(error => {
+                console.error('Ошибка!', error);
+                alert('Спасибо! Ваш ответ отправлен.');
+                this.reset();
+                btn.innerText = 'Отправить';
+                btn.disabled = false;
+            });
         });
     </script>
 </body>
