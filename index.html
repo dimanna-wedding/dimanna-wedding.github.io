@@ -144,9 +144,9 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // ПРЯМАЯ ОТПРАВКА В TELEGRAM С ТАБЛИЧНЫМ ФОРМАТИРОВАНИЕМ
+        // ПРЯМАЯ ОТПРАВКА В TELEGRAM ОБОИМ (ВАМ И ДОЧКЕ)
         const BOT_TOKEN = '8727506712:AAFh1czP_R7WrmAEbObEbkvMkemjd6dRDgE';
-        const CHAT_ID = '124877125';
+        const CHAT_IDS = ['124877125', '1971406691'];
 
         document.getElementById('rsvpForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -159,7 +159,6 @@
             const attVal = document.querySelector('input[name="attendance"]:checked').value;
             const timeVal = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
 
-            // Формируем красивую табличную карточку
             const textMsg = 
 `📋 *НОВЫЙ ОТВЕТ НА ПРИГЛАШЕНИЕ*
 ----------------------------------
@@ -170,22 +169,19 @@
 
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: CHAT_ID,
-                    text: textMsg,
-                    parse_mode: 'Markdown'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.ok) {
-                    alert('Спасибо! Ваш ответ успешно отправлен.');
-                } else {
-                    alert('Ошибка от Telegram: ' + data.description);
-                }
+            Promise.all(CHAT_IDS.map(chatId => {
+                return fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: textMsg,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            }))
+            .then(() => {
+                alert('Спасибо! Ваш ответ успешно отправлен.');
                 this.reset();
                 btn.innerText = 'Отправить';
                 btn.disabled = false;
