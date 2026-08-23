@@ -359,7 +359,7 @@
             </div>
             <div class="timeline-item">
                 <div class="timeline-time">17:30</div>
-                <div class="timeline-content"><h3>Фотосет молодоженов с гостями</h3></div>
+                <div class="timeline-content"><h3>Фотосет молодожен с гостями</h3></div>
             </div>
             <div class="timeline-item">
                 <div class="timeline-time">18:00</div>
@@ -451,38 +451,32 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-       // Отправка формы RSVP
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwy1xLWS-Q0KRB9Nwty9tsOh0wssQRR0aC455rDBCtxOI1-o4NrM31UKH_djJurYM-A/exec';
+        // Отправка формы RSVP
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwXpD0nmAz692JeCZKfQ4rCyWpkWY28lInvlzyJvI4FBKRF1Jrm-i8byKDnsLLgJwHB/exec';
+        
+        document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = this.querySelector('.submit-btn');
+            btn.innerText = 'Отправляем...';
+            btn.disabled = true;
 
-document.getElementById('rsvpForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+            const formData = new FormData(this);
 
-  const btn = document.querySelector('.submit-btn');
-  btn.innerText = 'Отправляем...';
-  btn.disabled = true;
-
-  const nameInput = this.querySelector('[name="name"]') ? this.querySelector('[name="name"]').value : "Гость";
-  const attendanceSelect = this.querySelector('[name="attendance"]') ? this.querySelector('[name="attendance"]').value : "Не указано";
-
-  const dataString = "name=" + encodeURIComponent(nameInput) + "&attendance=" + encodeURIComponent(attendanceSelect);
-
-  fetch(scriptURL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: dataString
-  })
-  .then(response => {
-    alert('Спасибо! Ваш ответ сохранен.');
-    this.reset();
-    btn.innerText = 'Отправить';
-    btn.disabled = false;
-  })
-  .catch(error => {
-    console.error('Ошибка!', error);
-    alert('Упс, произошла ошибка при отправке. Пожалуйста, попробуйте еще раз.');
-    btn.innerText = 'Отправить';
-    btn.disabled = false;
-  });
-});
+            fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
+                .then(response => {
+                    alert('Спасибо! Ваш ответ сохранен.');
+                    this.reset();
+                    btn.innerText = 'Отправить';
+                    btn.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Ошибка!', error.message);
+                    alert('Упс, произошла ошибка при отправке. Пожалуйста, попробуйте еще раз.');
+                    btn.innerText = 'Отправить';
+                    btn.disabled = false;
+                });
+        });
+    </script>
+</body>
+</html>
