@@ -451,32 +451,38 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // Отправка формы RSVP
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwylxLWS-Q0kRB9Nwty9tsOh0wssQRR0aC455rDBCteXOI1-o4NrM31UKLH_djJuRYm-A/exec';
-        
-        document.getElementById('rsvpForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const btn = this.querySelector('.submit-btn');
-            btn.innerText = 'Отправляем...';
-            btn.disabled = true;
+       // Отправка формы RSVP
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwy1xLWS-Q0KRB9Nwty9tsOh0wssQRR0aC455rDBCtxOI1-o4NrM31UKH_djJurYM-A/exec';
 
-            const formData = new FormData(this);
+document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+  e.preventDefault();
 
-            fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
-                .then(response => {
-                    alert('Спасибо! Ваш ответ сохранен.');
-                    this.reset();
-                    btn.innerText = 'Отправить';
-                    btn.disabled = false;
-                })
-                .catch(error => {
-                    console.error('Ошибка!', error.message);
-                    alert('Упс, произошла ошибка при отправке. Пожалуйста, попробуйте еще раз.');
-                    btn.innerText = 'Отправить';
-                    btn.disabled = false;
-                });
-        });
-    </script>
-</body>
-</html>
+  const btn = document.querySelector('.submit-btn');
+  btn.innerText = 'Отправляем...';
+  btn.disabled = true;
+
+  const nameInput = this.querySelector('[name="name"]') ? this.querySelector('[name="name"]').value : "Гость";
+  const attendanceSelect = this.querySelector('[name="attendance"]') ? this.querySelector('[name="attendance"]').value : "Не указано";
+
+  const dataString = "name=" + encodeURIComponent(nameInput) + "&attendance=" + encodeURIComponent(attendanceSelect);
+
+  fetch(scriptURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: dataString
+  })
+  .then(response => {
+    alert('Спасибо! Ваш ответ сохранен.');
+    this.reset();
+    btn.innerText = 'Отправить';
+    btn.disabled = false;
+  })
+  .catch(error => {
+    console.error('Ошибка!', error);
+    alert('Упс, произошла ошибка при отправке. Пожалуйста, попробуйте еще раз.');
+    btn.innerText = 'Отправить';
+    btn.disabled = false;
+  });
+});
