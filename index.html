@@ -399,9 +399,11 @@
         </div>
     </section>
 
-    <!-- RSVP -->
+    <!-- RSVP (Используем iframe для гарантированной отправки без CORS) -->
     <section class="rsvp-section">
-        <form class="rsvp-form" id="rsvpForm">
+        <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(window.submitted) { alert('Спасибо! Ваш ответ отправлен.'); window.location.reload(); }"></iframe>
+        
+        <form class="rsvp-form" id="rsvpForm" action="https://script.google.com/macros/s/AKfycbwy1xLWS-Q0KRB9Nwty9tsOh0wssQRR0aC455rDBCtxOI1-o4NrM31UKH_djJurYM-A/exec" method="POST" target="hidden_iframe" onsubmit="window.submitted=true;">
             <div class="form-group">
                 <label for="guestName">Ваше Имя и Фамилия</label>
                 <input type="text" id="guestName" name="name" required placeholder="Введите ответ...">
@@ -421,9 +423,8 @@
         </form>
     </section>
 
-    <!-- Скрипты (Таймер и отправка RSVP) -->
+    <!-- Таймер обратного отсчета -->
     <script>
-        // Таймер обратного отсчета
         const weddingDate = new Date('September 9, 2026 16:30:00').getTime();
 
         function updateCountdown() {
@@ -450,44 +451,6 @@
 
         setInterval(updateCountdown, 1000);
         updateCountdown();
-
-        // Отправка формы RSVP (исправленный надежный метод)
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwy1xLWS-Q0KRB9Nwty9tsOh0wssQRR0aC455rDBCtxOI1-o4NrM31UKH_djJurYM-A/exec';
-        
-        document.getElementById('rsvpForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const btn = this.querySelector('.submit-btn');
-            btn.innerText = 'Отправляем...';
-            btn.disabled = true;
-
-            const nameVal = this.querySelector('[name="name"]').value;
-            const attendanceEl = this.querySelector('[name="attendance"]:checked');
-            const attendanceVal = attendanceEl ? attendanceEl.value : "Не указано";
-
-            const dataString = "name=" + encodeURIComponent(nameVal) + "&attendance=" + encodeURIComponent(attendanceVal);
-
-            fetch(scriptURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: dataString
-            })
-            .then(response => {
-                alert('Спасибо! Ваш ответ сохранен.');
-                this.reset();
-                btn.innerText = 'Отправить';
-                btn.disabled = false;
-            })
-            .catch(error => {
-                console.error('Ошибка!', error);
-                alert('Спасибо! Ваш ответ отправлен.');
-                this.reset();
-                btn.innerText = 'Отправить';
-                btn.disabled = false;
-            });
-        });
     </script>
 </body>
 </html>
